@@ -2,6 +2,7 @@ const router = require('express').Router()
 const { Query } = require('../dataConfig')
 const { vt } = require('./vt')
 
+// get all categories
 router.get('/category', vt, async (req, res) => {
     try {
         const q = `select * from productCategory`
@@ -13,17 +14,18 @@ router.get('/category', vt, async (req, res) => {
     }
 })
 
+// get products by category or search product by name
 router.get('/', vt, async (req, res) => {
     try {
-        const { category_id, product } = req.query
+        const { category_id, name } = req.query
         let q = 'select * from product'
-        if (category_id || product) {
+        if (category_id || name) {
             q += ' where'
             if (category_id) {
                 q += ` category_id=${category_id} and`
             }
-            if (product) {
-                q += ` name like '%${product}%' and`
+            if (name) {
+                q += ` name like '%${name}%' and`
             }
             q = q.slice(0, -4)
         }
@@ -35,6 +37,7 @@ router.get('/', vt, async (req, res) => {
     }
 })
 
+// get amount of products in site
 router.head('/', async (req, res) => {
     try {
         const q = `SELECT count(name) FROM product`
@@ -46,11 +49,12 @@ router.head('/', async (req, res) => {
     }
 })
 
+// add product
 router.post('/', vt, async (req, res) => {
     if (req.user.role === 1) {
         try {
-            const { product, category_id, price, image } = req.body
-            const q = `insert into product (name, category_id, price, image) values ("${product}",${category_id}, ${price}, "${image}")`
+            const { name, category_id, price, image } = req.body
+            const q = `insert into product (name, category_id, price, image) values ("${name}",${category_id}, ${price}, "${image}")`
             await Query(q)
 
             const qq = 'select * from product'
@@ -67,6 +71,7 @@ router.post('/', vt, async (req, res) => {
     }
 })
 
+// edit product
 router.put('/:id', vt, async(req, res)=>{
     if (req.user.role === 1) {
         try {
