@@ -12,6 +12,7 @@ const vt = (req, res, next) => {
                     res.status(401).json({ err: true, msg: err })
                 } else {
                     const token = jwt.sign({
+                        id: user.id,
                         israeliID: payload.israeliID,
                         first_name: payload.first_name,
                         last_name: payload.last_name,

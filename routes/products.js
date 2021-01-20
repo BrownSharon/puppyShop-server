@@ -23,7 +23,7 @@ router.get('/', vt, async (req, res) => {
                 q += ` category_id=${category_id} and`
             }
             if (product) {
-                q += ` product like %${product}% and`
+                q += ` name like '%${product}%' and`
             }
             q = q.slice(0, -4)
         }
@@ -37,7 +37,7 @@ router.get('/', vt, async (req, res) => {
 
 router.head('/', async (req, res) => {
     try {
-        const q = `SELECT count(product) FROM product`
+        const q = `SELECT count(name) FROM product`
         const productsCount = await Query(q)
         res.json({ err: false, msg: productsCount })
     } catch (err) {
@@ -50,7 +50,7 @@ router.post('/', vt, async (req, res) => {
     if (req.user.role === 1) {
         try {
             const { product, category_id, price, image } = req.body
-            const q = `inset into product insert into product (product, category_id, price, image) values ("${product}",${category_id}, ${price}, "${image}")`
+            const q = `insert into product (name, category_id, price, image) values ("${product}",${category_id}, ${price}, "${image}")`
             await Query(q)
 
             const qq = 'select * from product'
@@ -71,7 +71,7 @@ router.put('/:id', vt, async(req, res)=>{
     if (req.user.role === 1) {
         try {
             const { product, category_id, price, image } = req.body
-            const q = `update product set product="${product}", category_id=${category_id}, price=${price}, image="${image}" where id=${req.params.id}`
+            const q = `update product set name="${product}", category_id=${category_id}, price=${price}, image="${image}" where id=${req.params.id}`
             await Query(q)
 
             const qq = `select * from product where id=${req.params.id}`

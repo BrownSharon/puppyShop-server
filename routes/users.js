@@ -57,6 +57,7 @@ router.post('/', async (req, res) => {
         // only if the info is correct
 
         const token = jwt.sign({
+            id: user.id,
             israeliID: user.israeliID,
             first_name: user.first_name,
             last_name: user.last_name,
@@ -67,6 +68,7 @@ router.post('/', async (req, res) => {
         }, "EndOfCourse1", { expiresIn: "1m" })
 
         const refreshToken = jwt.sign({
+            id: user.id,
             israeliID: user.israeliID,
             first_name: user.first_name,
             last_name: user.last_name,
@@ -107,6 +109,7 @@ router.post('/token', async (req, res) => {
         // only if the info is correct
 
         const token = jwt.sign({
+            id: user.id,
             israeliID: user.israeliID,
             first_name: user.first_name,
             last_name: user.last_name,
@@ -117,6 +120,7 @@ router.post('/token', async (req, res) => {
         }, "EndOfCourse1", { expiresIn: "1m" })
 
         const refreshToken = jwt.sign({
+            id: user.id,
             israeliID: user.israeliID,
             first_name: user.first_name,
             last_name: user.last_name,
