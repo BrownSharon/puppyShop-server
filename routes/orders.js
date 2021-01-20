@@ -57,7 +57,7 @@ router.post("/", vt, async(req,res)=>{
 })
 
 // get receipt file --- need to be done 
-router.post('/receipt/:id', vt, async(req,res)=>{
+router.get('/receipt/:id', vt, async(req,res)=>{
     if (req.user.role === 2) {
         try {
             

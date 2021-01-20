@@ -4,7 +4,7 @@ const con = mysql.createConnection({
 	host: 'localhost',
 	user: 'root',
 	password: 'ry)9/Ehody<b',
-	database: 'toysMarket',
+	database: 'PuppyShop',
 	dateStrings: true
 })
 
