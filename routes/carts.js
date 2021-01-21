@@ -9,7 +9,7 @@ router.get('/:id', vt, async (req, res) => {
             let q = ` SELECT cartItem.cart_id, cartItem.id as cartItem_id, cartItem.product_total_price, cart.user_id, cart.create_date, cart.status FROM cartItem inner join cart on cart.id = cart_id where user_id=${req.user.id} and status=false`
 
             const openCart = await Query(q)
-            res.json({ err: false, msg: openCart })
+            res.json({ err: false, openCart })
         } catch (err) {
             console.log(err);
             res.json({ err: true, msg: err })
@@ -29,8 +29,8 @@ router.get('/', vt, async (req, res) => {
                 q += ` and name like '%${product_name}%'`
             }
 
-            const products = await Query(q)
-            res.json({ err: false, msg: products })
+            const cartItems = await Query(q)
+            res.json({ err: false, cartItems })
         } catch (err) {
             console.log(err);
             res.json({ err: true, msg: err })
@@ -47,7 +47,7 @@ router.head('/:id', vt, async (req, res) => {
             const q = `SELECT sum(cartItem.product_total_price) as total_cart_price from cartItem where cart_id=${req.params.id}`
 
             const totalCartPrice = await Query(q)
-            res.json({ err: false, msg: totalCartPrice })
+            res.json({ err: false, totalCartPrice })
         } catch (err) {
             console.log(err);
             res.json({ err: true, msg: err })
@@ -67,7 +67,7 @@ router.post('/', vt, async (req, res) => {
 
             const qq = `SELECT cartItem.cart_id, cartItem.id as cartItem_id , cartItem.product_id, product.name, cartItem.product_amount, product.price, cartItem.product_total_price  FROM cartItem inner join product on product.id = product_id where cart_id=${cart_id}`
             const cartItems = await Query(qq)
-            res.json({ err: false, msg: cartItems })
+            res.json({ err: false, cartItems })
         } catch (err) {
             console.log(err);
             res.json({ err: true, msg: err })
@@ -78,24 +78,24 @@ router.post('/', vt, async (req, res) => {
 })
 
 // edit amount of items --> extra
-router.patch('/', async (req, res) => {
-    if (req.user.role === 2) {
-        try {
-            const { cartItem_id, product_amount, product_total_price, cart_id } = req.body
-            const q = ``
+// router.patch('/', async (req, res) => {
+//     if (req.user.role === 2) {
+//         try {
+//             const { cartItem_id, product_amount, product_total_price, cart_id } = req.body
+//             const q = ``
 
-            await Query(q)
-            const qq = `SELECT cartItem.cart_id, cartItem.id as cartItem_id , cartItem.product_id, product.name, cartItem.product_amount, product.price, cartItem.product_total_price, product.image FROM cartItem inner join product on product.id = product_id where cart_id=${cart_id}`
-            const cartItems = await Query(qq)
-            res.json({ err: false, msg: cartItems })
-        } catch (err) {
-            console.log(err);
-            res.json({ err: true, msg: err })
-        }
-    } else {
-        res.json({ err: true, msg: "unauthorized action" })
-    }
-})
+//             await Query(q)
+//             const qq = `SELECT cartItem.cart_id, cartItem.id as cartItem_id , cartItem.product_id, product.name, cartItem.product_amount, product.price, cartItem.product_total_price, product.image FROM cartItem inner join product on product.id = product_id where cart_id=${cart_id}`
+//             const cartItems = await Query(qq)
+//             res.json({ err: false, cartItems })
+//         } catch (err) {
+//             console.log(err);
+//             res.json({ err: true, msg: err })
+//         }
+//     } else {
+//         res.json({ err: true, msg: "unauthorized action" })
+//     }
+// })
 
 // delete item from cart
 router.delete('/:id', async (req, res) => {
@@ -107,7 +107,7 @@ router.delete('/:id', async (req, res) => {
 
             const qq = `SELECT cartItem.cart_id, cartItem.id as cartItem_id , cartItem.product_id, product.name, cartItem.product_amount, product.price, cartItem.product_total_price, product.image FROM cartItem inner join product on product.id = product_id where cart_id=${cart_id}`
             const cartItems = await Query(qq)
-            res.json({ err: false, msg: cartItems })
+            res.json({ err: false, cartItems })
         } catch (err) {
             console.log(err);
             res.json({ err: true, msg: err })
@@ -127,7 +127,7 @@ router.delete('/all/:id', vt, async (req, res) => {
             const qq = `SELECT cartItem.cart_id, cartItem.id as cartItem_id , cartItem.product_id, product.name, cartItem.product_amount, product.price, cartItem.product_total_price, product.image FROM cartItem inner join product on product.id = product_id where cart_id=${cart_id}`
             const cartItems = await Query(qq)
 
-            res.json({ err: false, msg: cartItems })
+            res.json({ err: false, cartItems })
         } catch (err) {
             console.log(err);
             res.json({ err: true, msg: err })

@@ -19,7 +19,8 @@ const vt = (req, res, next) => {
                         email: payload.email,
                         role: payload.role_id,
                         city: payload.city,
-                        street: payload.street
+                        street: payload.street,
+                        isLogin: true
                     }, "EndOfCourse1", { expiresIn: "1m" })
                     req.user = payload
                     req.token = token

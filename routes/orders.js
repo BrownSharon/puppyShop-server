@@ -7,7 +7,7 @@ router.head('/', async (req, res) => {
     try {
         const q = ` SELECT count(id) as numberOfOrders from shopOrder`
         const numberOfOrders = await Query(q)
-        res.json({ err: false, msg: numberOfOrders })
+        res.json({ err: false, numberOfOrders })
     } catch (err) {
         console.log(err);
         res.json({ err: true, msg: err })
@@ -24,7 +24,7 @@ router.get('/', vt, async(req,res)=>{
             const qq= `SELECT * from shopOrder where user_id=${req.user.id} and closing_date="${lastOrderDate}"`
 
             const lastOrder = await Query(qq)
-            res.json({ err: false, msg: lastOrder })
+            res.json({ err: false, lastOrder })
         } catch (err) {
             console.log(err);
             res.json({ err: true, msg: err })
@@ -46,7 +46,7 @@ router.post("/", vt, async(req,res)=>{
 
             const qq= `select * from shopOrder where cart_id=${cart_id}`
             const newOrder = await Query(qq)
-            res.json({ err: false, msg: newOrder })
+            res.json({ err: false, newOrder })
         } catch (err) {
             console.log(err);
             res.json({ err: true, msg: err })

@@ -7,7 +7,7 @@ router.get('/category', vt, async (req, res) => {
     try {
         const q = `select * from productCategory`
         const categories = await Query(q)
-        res.json({ err: false, msg: categories })
+        res.json({ err: false, categories })
     } catch (err) {
         console.log(err);
         res.json({ err: true, msg: err })
@@ -30,7 +30,7 @@ router.get('/', vt, async (req, res) => {
             q = q.slice(0, -4)
         }
         const products = await Query(q)
-        res.json({ err: false, msg: products })
+        res.json({ err: false, products })
     } catch (err) {
         console.log(err);
         res.json({ err: true, msg: err })
@@ -42,7 +42,7 @@ router.head('/', async (req, res) => {
     try {
         const q = `SELECT count(name) FROM product`
         const productsCount = await Query(q)
-        res.json({ err: false, msg: productsCount })
+        res.json({ err: false, productsCount })
     } catch (err) {
         console.log(err);
         res.json({ err: true, msg: err })
@@ -60,7 +60,7 @@ router.post('/', vt, async (req, res) => {
             const qq = 'select * from product'
             const products = await Query(qq)
 
-            res.json({ err: false, msg: products })
+            res.json({ err: false, products })
         } catch (err) {
             console.log(err);
             res.json({ err: true, msg: err })
@@ -75,14 +75,14 @@ router.post('/', vt, async (req, res) => {
 router.put('/:id', vt, async(req, res)=>{
     if (req.user.role === 1) {
         try {
-            const { product, category_id, price, image } = req.body
-            const q = `update product set name="${product}", category_id=${category_id}, price=${price}, image="${image}" where id=${req.params.id}`
+            const { name, category_id, price, image } = req.body
+            const q = `update product set name="${name}", category_id=${category_id}, price=${price}, image="${image}" where id=${req.params.id}`
             await Query(q)
 
             const qq = `select * from product where id=${req.params.id}`
-            const product = await Query(qq)
+            const productItem = await Query(qq)
 
-            res.json({ err: false, msg: product })
+            res.json({ err: false,  productItem })
         } catch (err) {
             console.log(err);
             res.json({ err: true, msg: err })

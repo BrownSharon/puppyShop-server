@@ -24,8 +24,8 @@ router.get('/', async (req, res) => {
             
         let userCheckUp = await Query(q)
         userCheckUp = userCheckUp[0]
-        if (userCheckUp) return res.status(400).json({ err: true, msg: "already in the service, check again" })
-        res.json({ err: false, msg: userCheckUp })
+        if (userCheckUp) return res.status(400).json({ err: true, exists: true })
+        res.json({ err: false, exists: false })
     } catch (err) {
         console.log(err);
         res.status(500).json({ err: true, msg: err })
@@ -46,8 +46,8 @@ router.post('/', async (req, res) => {
         const user_role = 2
 
         // insert the user to users table
-        const q = `INSERT INTO users (israeliID, first_name, last_name, email, password, role_id, city, street)
-        values (${israeliID}, "${first_name}", "${last_name}", "${email}", "${hashedPassword}", ${user_role}, "${city}", "${street}" );`
+        const q = `INSERT INTO users (israeliID, first_name, last_name, email, password, role_id, city, street, isLogin)
+        values (${israeliID}, "${first_name}", "${last_name}", "${email}", "${hashedPassword}", ${user_role}, "${city}", "${street}", 1 );`
         await Query(q)
 
         const qq = `SELECT * FROM users WHERE israeliID="${israeliID}"`
@@ -64,7 +64,8 @@ router.post('/', async (req, res) => {
             user_email: user.email,
             role: user.role_id,
             city: user.city,
-            street: user.street
+            street: user.street,
+            isLogin: true
         }, "EndOfCourse1", { expiresIn: "1m" })
 
         const refreshToken = jwt.sign({
@@ -75,10 +76,11 @@ router.post('/', async (req, res) => {
             user_email: user.email,
             role: user.role_id,
             city: user.city,
-            street: user.street
+            street: user.street,
+            isLogin: true
         }, "EndOfCourse2", { expiresIn: "10m" })
 
-        res.json({ err: false, msg: {token, refreshToken }})
+        res.json({ err: false, tokenData: {token, refreshToken }})
 
     } catch (err) {
         console.log(err);
@@ -88,7 +90,7 @@ router.post('/', async (req, res) => {
 
 
 // login
-router.post('/token', async (req, res) => {
+router.post('/login', async (req, res) => {
     try {
         const { email, password } = req.body
 
@@ -116,7 +118,8 @@ router.post('/token', async (req, res) => {
             email: user.email,
             role: user.role_id,
             city: user.city,
-            street: user.street
+            street: user.street,
+            isLogin: true
         }, "EndOfCourse1", { expiresIn: "1m" })
 
         const refreshToken = jwt.sign({
@@ -127,10 +130,34 @@ router.post('/token', async (req, res) => {
             email: user.email,
             role: user.role_id,
             city: user.city,
-            street: user.street
+            street: user.street,
+            isLogin: true
         }, "EndOfCourse2", { expiresIn: "10m" })
 
-        res.json({ err: false, msg: {token, refreshToken }})
+        res.json({ err: false, tokenData: {token, refreshToken }})
+    } catch (err) {
+        console.log(err);
+        res.status(500).json({ err: true, msg: err })
+    }
+})
+
+// logout
+router.patch('/', vt, async(req,res)=>{
+    try {
+        const q = `update user set isLogin=false where id=${req.user.id}`
+        await Query(q)
+        res.status(200) 
+    } catch (err) {
+        console.log(err);
+        res.status(500).json({ err: true, msg: err })
+    }
+})
+
+// check tokens
+router.get('/check', vt, async(req,res)=>{
+    try {
+        const user = req.user
+        res.json({err:false, user})
     } catch (err) {
         console.log(err);
         res.status(500).json({ err: true, msg: err })
