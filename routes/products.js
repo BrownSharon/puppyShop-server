@@ -18,7 +18,7 @@ router.get('/category', vt, async (req, res) => {
 router.get('/', vt, async (req, res) => {
     try {
         const { category_id, name } = req.query
-        let q = 'select * from product'
+        let q = 'SELECT product.id, product.name, product.category_id, product.price, product.image, cartItem.id as cartItem_id, cartItem.product_id, cartItem.product_amount, cartItem.product_total_price, cartItem.cart_id FROM product left join cartItem on cartItem.product_id = product.id'
         if (category_id || name) {
             q += ' where'
             if (category_id) {
@@ -38,9 +38,9 @@ router.get('/', vt, async (req, res) => {
 })
 
 // get amount of products in site
-router.head('/', async (req, res) => {
+router.get('/number', async (req, res) => {
     try {
-        const q = `SELECT count(name) FROM product`
+        const q = `SELECT count(name) as productsCount FROM product`
         const productsCount = await Query(q)
         res.json({ err: false, productsCount })
     } catch (err) {
@@ -57,9 +57,8 @@ router.post('/', vt, async (req, res) => {
             const q = `insert into product (name, category_id, price, image) values ("${name}",${category_id}, ${price}, "${image}")`
             await Query(q)
 
-            const qq = 'select * from product'
+            const qq = 'SELECT * FROM product'
             const products = await Query(qq)
-
             res.json({ err: false, products })
         } catch (err) {
             console.log(err);
@@ -79,7 +78,7 @@ router.put('/:id', vt, async(req, res)=>{
             const q = `update product set name="${name}", category_id=${category_id}, price=${price}, image="${image}" where id=${req.params.id}`
             await Query(q)
 
-            const qq = `select * from product where id=${req.params.id}`
+            const qq = `SELECT * FROM product where id=${req.params.id}`
             const productItem = await Query(qq)
 
             res.json({ err: false,  productItem })

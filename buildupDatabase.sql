@@ -1,6 +1,6 @@
--- create database PuppyShop;
+create database PuppyShop;
 
--- use PuppyShop;
+use PuppyShop;
 
 CREATE TABLE outhorization (
   id int NOT NULL AUTO_INCREMENT,
@@ -33,11 +33,11 @@ values (040090094, "admin@gmail.com","$2b$10$Iaf.ODSZtEtFIk6Xz.SpJ.Z8/dbIT3c.r3f
 
 create table productCategory (
 	id int auto_increment not null,
-    category varchar(50),
+    name varchar(50),
     primary key (id) 
 );
 
-insert into productCategory (category)
+insert into productCategory (name)
 values ("Food"),("Treats"),("toys"),("Care"),("Beds"),("Collors & Leashes"),("Food Bowls"); 
 
 create table product (
@@ -85,10 +85,10 @@ insert into cart (user_id, create_date, status) values (2, "2021-01-15", 0), (2,
 
 create table cartItem (
 	id int auto_increment not null,
-    product_id int,
+    product_id int not null,
     product_amount int,
     product_total_price int,
-    cart_id int,
+    cart_id int not null,
     primary key (id),
     foreign key (product_id) references product(id),
     foreign key (cart_id) references cart(id)
@@ -114,3 +114,12 @@ create table shopOrder (
 
 insert into shopOrder (user_id, cart_id, order_total_price, city, street, delivery_data, closing_date, credit_card)
 values (2, 1, 200, "Tel aviv", "Jabotinsky", "2021-01-23", "2021-01-20", 1234);
+
+create table city(
+	id int auto_increment not null,
+    name varchar(30),
+    primary key (id)
+);
+
+insert into city (name)
+values ("Jerusalem"),("Tel Aviv"),("Haifa"),("Ashdod"),("Rishon LeZiyyon"),("Petah Tikva"),("Beersheba"),("Netanya"),("Holon"),("Bnei Brak");   

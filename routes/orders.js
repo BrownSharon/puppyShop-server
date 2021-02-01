@@ -2,8 +2,8 @@ const router = require('express').Router()
 const { Query } = require('../dataConfig')
 const { vt } = require('./vt')
 
-// count number of order in site
-router.head('/', async (req, res) => {
+// count number of car in site
+router.get('/all', async (req, res) => {
     try {
         const q = ` SELECT count(id) as numberOfOrders from shopOrder`
         const numberOfOrders = await Query(q)
@@ -20,9 +20,9 @@ router.get('/', vt, async(req,res)=>{
         try {
             const q = `SELECT max(closing_date) from shopOrder where user_id=${req.user.id}`
             const lastOrderDate = await Query(q)
-
+            console.log(lastOrderDate);
+            
             const qq= `SELECT * from shopOrder where user_id=${req.user.id} and closing_date="${lastOrderDate}"`
-
             const lastOrder = await Query(qq)
             res.json({ err: false, lastOrder })
         } catch (err) {
@@ -35,7 +35,7 @@ router.get('/', vt, async(req,res)=>{
 })
 
 // add new order
-router.post("/", vt, async(req,res)=>{
+router.post('/', vt, async(req,res)=>{
     if (req.user.role === 2) {
         try {
            const {user_id, cart_id, order_total_price, city, street, delivery_data, closing_date, credit_card} = req.body

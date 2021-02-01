@@ -2,30 +2,48 @@ const router = require('express').Router()
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken')
 const { Query } = require('../dataConfig.js')
+const { vt } = require('./vt')
 
 
-
-// get user 
-// or search for user by id or email ==> for validation in the registration
-router.get('/', async (req, res) => {
+// get user by id for checkUp in registration
+router.get('/id/:id', async (req, res) => {
     try {
-        const {israeliID, email} = req.query
-        let q = `SELECT * FROM users`
-        if (israeliID || email){
-            q += ' WHERE'
-            if (email) {
-                q += ` email="${req.query.email}" and`
-            }
-            if (israeliID) {
-                q += ` israeliIB="${req.query.israeliID}" and`
-            }
-            q = q.split(0, -4) 
-        } 
-            
+       
+        let q = `SELECT * FROM user where israeliID=${req.params.id}`    
         let userCheckUp = await Query(q)
         userCheckUp = userCheckUp[0]
-        if (userCheckUp) return res.status(400).json({ err: true, exists: true })
+        console.log(userCheckUp);
+        if (userCheckUp) return res.status(400).send("Id already exist in our data")
         res.json({ err: false, exists: false })
+    } catch (err) {
+        console.log(err);
+        res.status(500).json({ err: true, msg: err })
+    }
+})
+
+// get user by email for checkUp in registration
+router.get('/email/:email', async (req, res) => {
+    try {
+        let q = `SELECT * FROM user where email='${req.params.email}'`    
+        console.log(q);
+        let userCheckUp = await Query(q)
+        userCheckUp = userCheckUp[0]
+        console.log(userCheckUp);
+        if (userCheckUp?.id) return res.status(400).send("Email already exist in our data")
+        res.json({ err: false, exists: false })
+    } catch (err) {
+        console.log(err);
+        res.status(500).json({ err: true, msg: err })
+    }
+})
+
+// get cities for registration form
+router.get('/', async (req, res) => {
+    try {
+        let q = `SELECT * FROM city`    
+        console.log(q);
+        let cities = await Query(q)
+        res.json({ err: false,cities })
     } catch (err) {
         console.log(err);
         res.status(500).json({ err: true, msg: err })
@@ -46,11 +64,11 @@ router.post('/', async (req, res) => {
         const user_role = 2
 
         // insert the user to users table
-        const q = `INSERT INTO users (israeliID, first_name, last_name, email, password, role_id, city, street, isLogin)
+        const q = `INSERT INTO user (israeliID, first_name, last_name, email, password, role_id, city, street, isLogin)
         values (${israeliID}, "${first_name}", "${last_name}", "${email}", "${hashedPassword}", ${user_role}, "${city}", "${street}", 1 );`
         await Query(q)
 
-        const qq = `SELECT * FROM users WHERE israeliID="${israeliID}"`
+        const qq = `SELECT * FROM user WHERE israeliID="${israeliID}"`
         let user = await Query(qq)
         user = user[0]
 
@@ -66,7 +84,7 @@ router.post('/', async (req, res) => {
             city: user.city,
             street: user.street,
             isLogin: true
-        }, "EndOfCourse1", { expiresIn: "1m" })
+        }, "EndOfCourse1", { expiresIn: "10m" })
 
         const refreshToken = jwt.sign({
             id: user.id,
@@ -78,9 +96,9 @@ router.post('/', async (req, res) => {
             city: user.city,
             street: user.street,
             isLogin: true
-        }, "EndOfCourse2", { expiresIn: "10m" })
+        }, "EndOfCourse2", { expiresIn: "1h" })
 
-        res.json({ err: false, tokenData: {token, refreshToken }})
+        res.json({ err: false, token, refreshToken })
 
     } catch (err) {
         console.log(err);
@@ -97,19 +115,19 @@ router.post('/login', async (req, res) => {
         if (!email || !password)
             return res.status(400).json({ err: true, msg: "missing some info" })
 
-        const q = `SELECT * FROM users WHERE email="${email}"`
+        const q = `SELECT * FROM user WHERE email="${email}"`
 
         let user = await Query(q)
         user = user[0]
 
         if (!user) return res.status(401).json({ err: true, msg: "user not found" })
 
-        console.log(bcrypt.compareSync(password, user.password));
-
         if (!bcrypt.compareSync(password, user.password)) return res.status(401).json({ err: true, msg: "wrong password" })
 
         // only if the info is correct
-
+        const qq = `update user set isLogin=true where id=${user.id}`
+        await Query(qq)
+        
         const token = jwt.sign({
             id: user.id,
             israeliID: user.israeliID,
@@ -120,7 +138,7 @@ router.post('/login', async (req, res) => {
             city: user.city,
             street: user.street,
             isLogin: true
-        }, "EndOfCourse1", { expiresIn: "1m" })
+        }, "EndOfCourse1", { expiresIn: "10m" })
 
         const refreshToken = jwt.sign({
             id: user.id,
@@ -132,9 +150,9 @@ router.post('/login', async (req, res) => {
             city: user.city,
             street: user.street,
             isLogin: true
-        }, "EndOfCourse2", { expiresIn: "10m" })
+        }, "EndOfCourse2", { expiresIn: "6h" })
 
-        res.json({ err: false, tokenData: {token, refreshToken }})
+        res.json({ err: false, token, refreshToken })
     } catch (err) {
         console.log(err);
         res.status(500).json({ err: true, msg: err })
@@ -142,11 +160,15 @@ router.post('/login', async (req, res) => {
 })
 
 // logout
-router.patch('/', vt, async(req,res)=>{
+router.put('/logout', vt, async(req,res)=>{
     try {
+        console.log("test");
         const q = `update user set isLogin=false where id=${req.user.id}`
         await Query(q)
-        res.status(200) 
+        const qq = `select * from user where id=${req.user.id}`
+        const user = await Query(qq)
+        console.log(user);
+        res.json({err: false, user})
     } catch (err) {
         console.log(err);
         res.status(500).json({ err: true, msg: err })

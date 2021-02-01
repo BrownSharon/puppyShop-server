@@ -11,6 +11,7 @@ app.use(express.json())
 app.use('/users', require('./routes/users'))
 app.use('/products', require('./routes/products'))
 app.use('/carts', require('./routes/carts'))
+app.use('/itemsCart', require('./routes/itemsCart'))
 app.use('/orders', require('./routes/orders'))
 app.use('/api', require('./routes/api'))
 

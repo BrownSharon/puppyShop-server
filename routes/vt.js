@@ -1,7 +1,6 @@
 const jwt = require('jsonwebtoken')
 
-const vt = (req, res, next) => {
-
+const vt = async (req, res, next) => {
     // check token
     jwt.verify(req.headers.token, "EndOfCourse1", (err, payload) => {
         if (err) {
@@ -21,7 +20,7 @@ const vt = (req, res, next) => {
                         city: payload.city,
                         street: payload.street,
                         isLogin: true
-                    }, "EndOfCourse1", { expiresIn: "1m" })
+                    }, "EndOfCourse1", { expiresIn: "10m" })
                     req.user = payload
                     req.token = token
                     next()
