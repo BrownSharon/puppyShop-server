@@ -84,7 +84,7 @@ router.post('/', async (req, res) => {
             city: user.city,
             street: user.street,
             isLogin: true
-        }, "EndOfCourse1", { expiresIn: "10m" })
+        }, "EndOfCourse1", { expiresIn: "1m" })
 
         const refreshToken = jwt.sign({
             id: user.id,
@@ -96,7 +96,7 @@ router.post('/', async (req, res) => {
             city: user.city,
             street: user.street,
             isLogin: true
-        }, "EndOfCourse2", { expiresIn: "1h" })
+        }, "EndOfCourse2", { expiresIn: "10m" })
 
         res.json({ err: false, token, refreshToken })
 

@@ -3,18 +3,17 @@ const { Query } = require('../dataConfig')
 const { vt } = require('./vt')
 
 
-// get items cart + search
+// get items cart
 router.get('/', vt, async (req, res) => {
     if (req.user.role === 2) {
         try {
-            const { cart_id, product_name } = req.query
+            const { cart_id, name } = req.query
             let q = `SELECT cartItem.cart_id, cartItem.id as cartItem_id , cartItem.product_id, product.name, cartItem.product_amount, product.price, cartItem.product_total_price, product.image  FROM cartItem
             inner join product on product.id = product_id where cart_id=${cart_id}`
 
-            // if (cart_id) {
-            //     q += ` and name like '%${product_name}%'`
-            // }
-
+            if (name){
+                q += ` and name like '%${name}%'`
+            }
             const cartItems = await Query(q)
             res.json({ err: false, cartItems })
         } catch (err) {
@@ -33,8 +32,7 @@ router.post('/', vt, async (req, res) => {
             const { product_id, product_amount, product_total_price, cart_id } = req.body
             const q = `select * from cartItem where product_id=${product_id}`
             const itemInCart = await Query(q)
-            console.log(itemInCart);
-            if (itemInCart.length == 1) {
+            if (itemInCart.length != 0) {
                 console.log("update");
                 const qq = `update cartItem set product_amount= ${product_amount}, product_total_price= ${product_total_price} where id=${itemInCart[0].id}`
                 await Query(qq)

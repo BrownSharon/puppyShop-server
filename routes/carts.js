@@ -84,6 +84,8 @@ router.get('/', vt, async (req, res) => {
             console.log(err);
             res.json({ err: true, msg: err })
         }
+    } else {
+        res.json({ err: true, msg: "unauthorized action" })
     }
 })
 
@@ -92,13 +94,17 @@ router.put('/', vt, async (req,res)=>{
     if (req.user.role === 2) {
         try {
             const {id} = req.body
-            let q = `update cart SET status=true WHERE id=${id}`
-            const openCart = await Query(q)
+            const q = `update cart SET status=true WHERE id=${id}`
+            await Query(q)
+            const qq = `select * from cart where id=${id}`
+            const openCart = await Query(qq)
             res.json({ err: false, openCart })
         } catch (err) {
             console.log(err);
             res.json({ err: true, msg: err })
         }
+    } else {
+        res.json({ err: true, msg: "unauthorized action" })
     }
 })
 module.exports = router
