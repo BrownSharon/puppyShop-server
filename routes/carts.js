@@ -3,7 +3,7 @@ const { Query } = require('../dataConfig')
 const { vt } = require('./vt')
 
 // get total cart price
-router.get('/total/:id', vt, async (req, res) => {
+router.get('/:id', vt, async (req, res) => {
     if (req.user.role === 2) {
         try {
             const q = `SELECT sum(cartItem.product_total_price) as total_cart_price from cartItem where cart_id=${req.params.id}`
@@ -40,20 +40,8 @@ router.post('/', vt, async (req,res)=>{
     }
 })
 
-// count number of carts in site
-router.get('/number', async (req, res) => {
-    try {
-        const q = ` SELECT count(id) as numberOfOrders from cart`
-        const numberOfOrders = await Query(q)
-        res.json({ err: false, numberOfOrders })
-    } catch (err) {
-        console.log(err);
-        res.json({ err: true, msg: err })
-    }
-})
-
 // delete all items in cart
-router.delete('/all/:id', vt, async (req, res) => {
+router.delete('/:id', vt, async (req, res) => {
     if (req.user.role === 2) {
         try {
             const q = `DELETE FROM cartItem WHERE cart_id=${req.params.id}`

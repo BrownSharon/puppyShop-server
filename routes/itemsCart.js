@@ -10,11 +10,8 @@ router.get('/', vt, async (req, res) => {
             const { cart_id, name } = req.query
             let q = `SELECT cartItem.cart_id, cartItem.id as cartItem_id , cartItem.product_id, product.name, cartItem.product_amount, product.price, cartItem.product_total_price, product.image  FROM cartItem
             inner join product on product.id = product_id where cart_id=${cart_id}`
-
-            if (name){
-                q += ` and name like '%${name}%'`
-            }
             const cartItems = await Query(q)
+
             res.json({ err: false, cartItems })
         } catch (err) {
             console.log(err);
@@ -47,8 +44,12 @@ router.post('/', vt, async (req, res) => {
 
             const qqq = `SELECT cartItem.cart_id, cartItem.id as cartItem_id , cartItem.product_id, product.name, cartItem.product_amount, product.price, cartItem.product_total_price, product.image FROM cartItem inner join product on product.id = product_id where cart_id=${cart_id}`
             const cartItems = await Query(qqq)
-            console.log(cartItems);
-            res.json({ err: false, cartItems })
+            
+            const qqqq = `SELECT sum(cartItem.product_total_price) as total_cart_price from cartItem where cart_id=${cart_id}`
+            let totalCartPrice = await Query(qqqq)
+            totalCartPrice = totalCartPrice[0].total_cart_price
+            
+            res.json({err:false, cartItems, totalCartPrice})
         } catch (err) {
             console.log(err);
             res.json({ err: true, msg: err })
@@ -67,9 +68,13 @@ router.put('/', vt, async (req, res) => {
             await Query(q)
 
             const qq = `SELECT cartItem.cart_id, cartItem.id as cartItem_id , cartItem.product_id, product.name, cartItem.product_amount, product.price, cartItem.product_total_price, product.image FROM cartItem inner join product on product.id = product_id where cart_id=${cart_id}`
-
             const cartItems = await Query(qq)
-            res.json({err:false, cartItems})
+
+            const qqq = `SELECT sum(cartItem.product_total_price) as total_cart_price from cartItem where cart_id=${cart_id}`
+            let totalCartPrice = await Query(qqq)
+            totalCartPrice = totalCartPrice[0].total_cart_price
+            
+            res.json({err:false, cartItems, totalCartPrice})
         } catch (err) {
             console.log(err);
             res.json({ err: true, msg: err })
@@ -78,7 +83,6 @@ router.put('/', vt, async (req, res) => {
         res.json({ err: true, msg: "unauthorized action" })
     }
 })
-
 
 // delete item from cart
 router.delete('/:id/:cart_id', vt, async (req, res) => {
