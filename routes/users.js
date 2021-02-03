@@ -6,14 +6,19 @@ const { vt } = require('./vt')
 
 
 // get user by id for checkUp in registration
-router.get('/id/:id', async (req, res) => {
+router.get('/:id/:email', async (req, res) => {
     try {
-       
+        // check id
         let q = `SELECT * FROM user where israeliID=${req.params.id}`    
-        let userCheckUp = await Query(q)
-        userCheckUp = userCheckUp[0]
-        console.log(userCheckUp);
-        if (userCheckUp) return res.status(400).send("Id already exist in our data")
+        let userCheckID = await Query(q)
+        userCheckID = userCheckID[0]
+        
+        // check email
+        q = `SELECT * FROM user where email='${req.params.email}'`    
+        let userCheckEmail = await Query(q)
+        userCheckEmail = userCheckEmail[0]
+
+        if (userCheckID || userCheckEmail) return res.status(400).send("Id and/or email already exist in our data")
         res.json({ err: false, exists: false })
     } catch (err) {
         console.log(err);
@@ -21,23 +26,7 @@ router.get('/id/:id', async (req, res) => {
     }
 })
 
-// get user by email for checkUp in registration
-router.get('/email/:email', async (req, res) => {
-    try {
-        let q = `SELECT * FROM user where email='${req.params.email}'`    
-        console.log(q);
-        let userCheckUp = await Query(q)
-        userCheckUp = userCheckUp[0]
-        console.log(userCheckUp);
-        if (userCheckUp?.id) return res.status(400).send("Email already exist in our data")
-        res.json({ err: false, exists: false })
-    } catch (err) {
-        console.log(err);
-        res.status(500).json({ err: true, msg: err })
-    }
-})
-
-// get cities for registration form
+// get 10 big cities (registration and order form)
 router.get('/', async (req, res) => {
     try {
         let q = `SELECT * FROM city`    
@@ -55,6 +44,7 @@ router.post('/', async (req, res) => {
     try {
         const { israeliID, email, password, first_name, last_name, city, street } = req.body
 
+        
         // check if the all fields are full (after all the validation in client side)
         if (!israeliID || !email || !password || !first_name || !last_name || !city || !street) return res.status(400).json({ err: true, msg: "missing some info" })
 
