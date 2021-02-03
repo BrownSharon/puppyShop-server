@@ -49,7 +49,7 @@ router.delete('/:id', vt, async (req, res) => {
 
             const qq = `SELECT cartItem.cart_id, cartItem.id as cartItem_id , cartItem.product_id, product.name, cartItem.product_amount, product.price, cartItem.product_total_price, product.image FROM cartItem inner join product on product.id = product_id where cart_id=${cart_id}`
             const cartItems = await Query(qq)
-            console.log(cartItems);
+            
             res.json({ err: false, cartItems })
         } catch (err) {
             console.log(err);

@@ -36,7 +36,6 @@ router.get('/', async (req, res) => {
         const q = `SELECT count(id) as productsCount FROM product`
         let productsCount = await Query(q)
         productsCount = productsCount[0].productsCount
-        console.log(productsCount);
         res.json({ err: false, productsCount })
     } catch (err) {
         console.log(err);

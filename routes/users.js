@@ -30,7 +30,6 @@ router.get('/:id/:email', async (req, res) => {
 router.get('/', async (req, res) => {
     try {
         let q = `SELECT * FROM city`    
-        console.log(q);
         let cities = await Query(q)
         res.json({ err: false,cities })
     } catch (err) {
@@ -152,12 +151,10 @@ router.post('/login', async (req, res) => {
 // logout
 router.put('/logout', vt, async(req,res)=>{
     try {
-        console.log("test");
         const q = `update user set isLogin=false where id=${req.user.id}`
         await Query(q)
         const qq = `select * from user where id=${req.user.id}`
         const user = await Query(qq)
-        console.log(user);
         res.json({err: false, user})
     } catch (err) {
         console.log(err);

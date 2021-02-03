@@ -26,19 +26,16 @@ router.get('/', vt, async (req, res) => {
 router.post('/', vt, async (req, res) => {
     if (req.user.role === 2) {
         try {
-            console.log(req.body);
             const { product_id, product_amount, product_total_price, cart_id } = req.body
             const q = `select * from cartItem where cart_id=${cart_id} and product_id=${product_id}`
             const itemInCart = await Query(q)
-            console.log(itemInCart);
+            
             if (itemInCart.length !== 0) {
-                console.log("update");
                 const qq = `update cartItem set product_amount= ${product_amount}, product_total_price= ${product_total_price} where id=${itemInCart[0].id}`
                 await Query(qq)
+
             } else {
-                console.log("add");
                 const qq = `insert into cartItem (product_id, product_amount, product_total_price, cart_id) values (${product_id},${product_amount},${product_total_price},${cart_id})`
-                console.log(qq);
                 await Query(qq)
             }
 
@@ -88,7 +85,6 @@ router.put('/', vt, async (req, res) => {
 router.delete('/:id/:cart_id', vt, async (req, res) => {
     if (req.user.role === 2) {
         try {
-            console.log(req.params);
             const q = `DELETE FROM cartItem WHERE id=${req.params.id}`
             await Query(q)
 
