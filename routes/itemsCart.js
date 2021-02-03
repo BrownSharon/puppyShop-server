@@ -29,10 +29,12 @@ router.get('/', vt, async (req, res) => {
 router.post('/', vt, async (req, res) => {
     if (req.user.role === 2) {
         try {
+            console.log(req.body);
             const { product_id, product_amount, product_total_price, cart_id } = req.body
-            const q = `select * from cartItem where product_id=${product_id}`
+            const q = `select * from cartItem where cart_id=${cart_id} and product_id=${product_id}`
             const itemInCart = await Query(q)
-            if (itemInCart.length != 0) {
+            console.log(itemInCart);
+            if (itemInCart.length !== 0) {
                 console.log("update");
                 const qq = `update cartItem set product_amount= ${product_amount}, product_total_price= ${product_total_price} where id=${itemInCart[0].id}`
                 await Query(qq)
@@ -43,7 +45,7 @@ router.post('/', vt, async (req, res) => {
                 await Query(qq)
             }
 
-            const qqq = `SELECT cartItem.cart_id, cartItem.id as cartItem_id , cartItem.product_id, product.name, cartItem.product_amount, product.price, cartItem.product_total_price, product.image  FROM cartItem inner join product on product.id = product_id where cart_id=${cart_id}`
+            const qqq = `SELECT cartItem.cart_id, cartItem.id as cartItem_id , cartItem.product_id, product.name, cartItem.product_amount, product.price, cartItem.product_total_price, product.image FROM cartItem inner join product on product.id = product_id where cart_id=${cart_id}`
             const cartItems = await Query(qqq)
             console.log(cartItems);
             res.json({ err: false, cartItems })

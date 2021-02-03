@@ -15,10 +15,10 @@ router.get('/category', vt, async (req, res) => {
 })
 
 // get products by category or search product by name
-router.get('/', vt, async (req, res) => {
+router.get('/:cart_id', vt, async (req, res) => {
     try {
         const { category_id, name } = req.query
-        let q = 'SELECT product.id, product.name, product.category_id, product.price, product.image, cartItem.id as cartItem_id, cartItem.product_id, cartItem.product_amount, cartItem.product_total_price, cartItem.cart_id FROM product left join cartItem on cartItem.product_id = product.id'
+        let q = `select * from product left join (SELECT product.id as product_id, cartItem.id as cartItem_id, cartItem.product_id as product_id_in_cart, cartItem.product_amount, cartItem.product_total_price, cartItem.cart_id FROM product right join  cartItem on cartItem.product_id = product.id where cartItem.cart_id=${req.params.cart_id}) as productItemInCart on productItemInCart.product_id = product.id`
         if (category_id || name) {
             q += ' where'
             if (category_id) {
@@ -38,10 +38,12 @@ router.get('/', vt, async (req, res) => {
 })
 
 // get amount of products in site
-router.get('/number', async (req, res) => {
+router.get('/', async (req, res) => {
     try {
-        const q = `SELECT count(name) as productsCount FROM product`
-        const productsCount = await Query(q)
+        const q = `SELECT count(id) as productsCount FROM product`
+        let productsCount = await Query(q)
+        productsCount = productsCount[0].productsCount
+        console.log(productsCount);
         res.json({ err: false, productsCount })
     } catch (err) {
         console.log(err);

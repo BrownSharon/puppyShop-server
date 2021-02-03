@@ -19,8 +19,8 @@ router.get('/total/:id', vt, async (req, res) => {
     }
 })
 
-// get new cart 
-router.get('/new', vt, async (req,res)=>{
+// add new cart 
+router.post('/', vt, async (req,res)=>{
     if (req.user.role === 2) {
         try {
             let date = new Date()

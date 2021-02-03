@@ -104,7 +104,7 @@ create table shopOrder (
     order_total_price int,
     city varchar(50),
     street varchar(50),
-    delivery_data date,
+    delivery_date date,
     closing_date date,
     credit_card int,
     primary key (id),
@@ -112,7 +112,7 @@ create table shopOrder (
     foreign key (cart_id) references cart(id)
 );
 
-insert into shopOrder (user_id, cart_id, order_total_price, city, street, delivery_data, closing_date, credit_card)
+insert into shopOrder (user_id, cart_id, order_total_price, city, street, delivery_date, closing_date, credit_card)
 values (2, 1, 200, "Tel aviv", "Jabotinsky", "2021-01-23", "2021-01-20", 1234);
 
 create table city(
