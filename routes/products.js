@@ -14,23 +14,14 @@ router.get('/category', vt, async (req, res) => {
     }
 })
 
-// get products by category or search product by name
+// get all products
 router.get('/:cart_id', vt, async (req, res) => {
     try {
         const { category_id, name } = req.query
         let q = `SELECT * FROM product 
         left join  (SELECT cartItem.id as itemCartID, cartItem.cart_id, cartItem.product_id, cartItem.product_amount, cartItem.product_total_price FROM cartItem where id = ${req.params.cart_id}) as current_cart_items 
         on current_cart_items .product_id = product.id`
-        if (category_id || name) {
-            q += ' where'
-            if (category_id) {
-                q += ` category_id=${category_id} and`
-            }
-            if (name) {
-                q += ` name like '%${name}%' and`
-            }
-            q = q.slice(0, -4)
-        }
+
         const products = await Query(q)
         res.json({ err: false, products })
     } catch (err) {
@@ -53,6 +44,7 @@ router.get('/', async (req, res) => {
     }
 })
 
+// admin only
 // add product
 router.post('/', vt, async (req, res) => {
     if (req.user.role === 1) {
@@ -74,6 +66,7 @@ router.post('/', vt, async (req, res) => {
     }
 })
 
+// admin only
 // edit product
 router.put('/:id', vt, async(req, res)=>{
     if (req.user.role === 1) {
