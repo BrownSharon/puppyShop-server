@@ -29,7 +29,7 @@ CREATE TABLE user (
 
 insert into user (israeliID, email, password, role_id, first_name, last_name, city, street, isLogin)
 values (040090094, "admin@gmail.com","$2b$10$Iaf.ODSZtEtFIk6Xz.SpJ.Z8/dbIT3c.r3fDDuFmrZP92S0T2MNIq",1,"sharon","brown","Petach Tikva", "Derech Menachem Begin", 0),
-(216228262, "benben@gmail.com","$2b$10$QhbgtLTwUj2N/dgSjgkIYOCLvy9Z6k.33yC3x9jCkPgTA/YwjB7MS",2, "bnaya","brown", "Tel aviv", "Jabotinsky", 0);
+(216228262, "benben@gmail.com","$2b$10$QhbgtLTwUj2N/dgSjgkIYOCLvy9Z6k.33yC3x9jCkPgTA/YwjB7MS",2, "bnaya","brown", "Tel Aviv", "Jabotinsky", 0);
 
 create table productCategory (
 	id int auto_increment not null,
@@ -112,8 +112,8 @@ create table shopOrder (
     foreign key (cart_id) references cart(id)
 );
 
-insert into shopOrder (user_id, cart_id, order_total_price, city, street, delivery_date, closing_date, credit_card)
-values (2, 1, 200, "Tel aviv", "Jabotinsky", "2021-01-23", "2021-01-20", 1234);
+-- insert into shopOrder (user_id, cart_id, order_total_price, city, street, delivery_date, closing_date, credit_card)
+-- values (2, 1, 200, "Tel aviv", "Jabotinsky", "2021-01-23", "2021-01-20", 1234);
 
 create table city(
 	id int auto_increment not null,

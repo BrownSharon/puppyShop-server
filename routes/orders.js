@@ -3,7 +3,7 @@ const { Query } = require('../dataConfig')
 const { vt } = require('./vt')
 
 // count number of orders in site
-router.get('/all', async (req, res) => {
+router.get('/number', async (req, res) => {
     try {
         const q = `SELECT count(id) as numberOfOrders from shopOrder`
         let numberOfOrders = await Query(q)
@@ -16,12 +16,11 @@ router.get('/all', async (req, res) => {
 })
 
 // get last order for user 
-router.get('/', vt, async(req,res)=>{
+router.get('/last', vt, async(req,res)=>{
     if (req.user.role === 2) {
         try {
             const q = `SELECT max(closing_date) as closing_date from shopOrder where user_id=${req.user.id}`
             const lastOrderDate = await Query(q)
-            console.log(lastOrderDate);
             if (lastOrderDate[0].closing_date){
                 const qq= `SELECT * from shopOrder where user_id=${req.user.id} and closing_date="${lastOrderDate[0].closing_date}"`
                 const lastOrder = await Query(qq)
@@ -51,6 +50,23 @@ router.post('/', vt, async(req,res)=>{
             const qq= `select * from shopOrder where cart_id=${cart_id}`
             const newOrder = await Query(qq)
             res.json({ err: false, newOrder })
+        } catch (err) {
+            console.log(err);
+            res.json({ err: true, msg: err })
+        }
+    } else {
+        res.json({ err: true, msg: "unauthorized action" })
+    }
+})
+
+// get orders dates for filtering the delivery day in order form
+router.get('/dates', vt, async (req,res)=>{
+    if (req.user.role === 2) {
+        try {
+            const q =`select * from (SELECT shopOrder.delivery_date, count(shopOrder.delivery_date) as counter FROM shopOrder 
+            group by shopOrder.delivery_date) as dateFilter where dateFilter.counter > 2`
+            const filteredDates = await Query(q)
+            res.json({ err: false, filteredDates })
         } catch (err) {
             console.log(err);
             res.json({ err: true, msg: err })

@@ -47,7 +47,7 @@ router.delete('/:id', vt, async (req, res) => {
             const q = `DELETE FROM cartItem WHERE cart_id=${req.params.id}`
             await Query(q)
 
-            const qq = `SELECT cartItem.cart_id, cartItem.id as cartItem_id , cartItem.product_id, product.name, cartItem.product_amount, product.price, cartItem.product_total_price, product.image FROM cartItem inner join product on product.id = product_id where cart_id=${cart_id}`
+            const qq = `SELECT cartItem.cart_id, cartItem.id as cartItem_id , cartItem.product_id, product.name, cartItem.product_amount, product.price, cartItem.product_total_price, product.image FROM cartItem inner join product on product.id = product_id where cart_id=${req.params.id}`
             const cartItems = await Query(qq)
             
             res.json({ err: false, cartItems })
