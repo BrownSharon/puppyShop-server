@@ -18,9 +18,7 @@ router.get('/category', vt, async (req, res) => {
 router.get('/:cart_id', vt, async (req, res) => {
     try {
         const { category_id, name } = req.query
-        let q = `SELECT * FROM product 
-        left join  (SELECT cartItem.id as itemCartID, cartItem.cart_id, cartItem.product_id, cartItem.product_amount, cartItem.product_total_price FROM cartItem where id = ${req.params.cart_id}) as current_cart_items 
-        on current_cart_items .product_id = product.id`
+        let q = `SELECT * FROM product left join  (SELECT cartItem.id as itemCartID, cartItem.cart_id, cartItem.product_id, cartItem.product_amount, cartItem.product_total_price FROM cartItem where cart_id = ${req.params.cart_id}) as current_cart_items on current_cart_items.product_id = product.id`
 
         const products = await Query(q)
         res.json({ err: false, products })
