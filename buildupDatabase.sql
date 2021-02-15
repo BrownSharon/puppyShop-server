@@ -105,7 +105,7 @@ create table shopOrder (
     city varchar(50),
     street varchar(50),
     delivery_date date,
-    closing_date date,
+    closing_date datetime,
     credit_card int,
     primary key (id),
     foreign key (user_id) references user(id),

@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <style>
+        table {
+            border-collapse: collapse;
+        }
+
+        table,
+        th,
+        td {
+            border: 1px solid black;
+        }
+
+    </style>
+</head>
+
+<body>
+    <div style="width: 85%; margin: 0 7.5%;">
+        <div style="text-align: left; padding-left: 50px;">
+            <p style="font-weight: bold;">Customer Details</p>
+            <p>Customer name: <%= orderData[0].first_name %>
+                    <%= orderData[0].last_name %>
+            </p>
+            <p>Email: <%= orderData[0].email %>
+            </p>
+            <p>Id: <%= orderData[0].israeliID %>
+            </p>
+            <p>Address: <%= orderData[0].user_city %>
+                    <%= orderData[0].user_street %>
+            </p>
+        </div>
+        <div style="text-align: center; padding-left: 50px;">
+            <h3>Receipt no.<%= orderData[0].order_id %>
+            </h3>
+            <table>
+                <tr class="header">
+                    <th>Product name</th>
+                    <th>Quantity</th>
+                    <th>Price</th>
+                    <th>Total price</th>
+                </tr>
+                <% if (orderData?.length> 0) { %>
+                    <% orderData.forEach(item=> {%>
+
+                        <tr class="item">
+                            <td>
+                                <%= item.name %>
+                            </td>
+                            <td>
+                                <%= item.product_amount %>
+                            </td>
+                            <td>
+                                <%= item.price %>
+                            </td>
+                            <td>
+                                <%=item.product_total_price %>
+                            </td>
+                        </tr>
+                        <% });%>
+                            <% }%>
+            </table>
+        </div>
+        <div style="text-align: left; padding-left: 50px;">
+            <p style="font-weight: bold;">Order Details</p>
+            <p>Total payment: <%=orderData[0].order_total_price %>$
+            </p>
+            <p>Means of payment (4 last digits): <%=orderData[0].credit_card %>
+            </p>
+            <p>Closing date: <%=orderData[0].closing_date %>
+            </p>
+            <p>Delivery date: <%=orderData[0].delivery_date %>
+            </p>
+        </div>
+    </div>
+</body>
+
+</html>
