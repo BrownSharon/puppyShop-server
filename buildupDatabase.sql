@@ -38,7 +38,7 @@ create table productCategory (
 );
 
 insert into productCategory (name)
-values ("Food"),("Treats"),("toys"),("Care"),("Beds"),("Collors & Leashes"),("Food Bowls"); 
+values ("Food"),("Treats"),("Toys"),("Care"),("Beds"),("Collors & Leashes"),("Food Bowls"); 
 
 create table product (
 	id int auto_increment not null,

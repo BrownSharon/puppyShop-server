@@ -15,13 +15,18 @@ router.get('/category', vt, async (req, res) => {
 })
 
 // get all products
-router.get('/:cart_id', vt, async (req, res) => {
+router.get('/', vt, async (req, res) => {
     try {
-        const { category_id, name } = req.query
-        let q = `SELECT * FROM product left join  (SELECT cartItem.id as itemCartID, cartItem.cart_id, cartItem.product_id, cartItem.product_amount, cartItem.product_total_price FROM cartItem where cart_id = ${req.params.cart_id}) as current_cart_items on current_cart_items.product_id = product.id`
-
+        const { cart_id, category_id, name } = req.query
+        let q
+        if (req.user.role === 2) {
+            q = `SELECT * FROM product left join  (SELECT cartItem.id as itemCartID, cartItem.cart_id, cartItem.product_id, cartItem.product_amount, cartItem.product_total_price FROM cartItem where cart_id = ${req.query.cart_id}) as current_cart_items on current_cart_items.product_id = product.id`
+        } else {
+            q='SELECT * FROM product'
+        }
         const products = await Query(q)
         res.json({ err: false, products })
+
     } catch (err) {
         console.log(err);
         res.json({ err: true, msg: err })
@@ -57,7 +62,7 @@ router.post('/', vt, async (req, res) => {
             console.log(err);
             res.json({ err: true, msg: err })
         }
-    }else{
+    } else {
         console.log(err);
         res.json({ err: true, msg: "unauthorized action" })
     }
@@ -65,7 +70,7 @@ router.post('/', vt, async (req, res) => {
 
 // admin only
 // edit product
-router.put('/:id', vt, async(req, res)=>{
+router.put('/:id', vt, async (req, res) => {
     if (req.user.role === 1) {
         try {
             const { name, category_id, price, image } = req.body
@@ -75,12 +80,12 @@ router.put('/:id', vt, async(req, res)=>{
             const qq = `SELECT * FROM product where id=${req.params.id}`
             const productItem = await Query(qq)
 
-            res.json({ err: false,  productItem })
+            res.json({ err: false, productItem })
         } catch (err) {
             console.log(err);
             res.json({ err: true, msg: err })
         }
-    }else{
+    } else {
         console.log(err);
         res.json({ err: true, msg: "unauthorized action" })
     }
