@@ -66,9 +66,9 @@ router.post('/', vt, async (req, res) => {
 router.get('/dates', vt, async (req, res) => {
     if (req.user.role === 2) {
         try {
-            const q = `select * from (SELECT shopOrder.delivery_date, count(shopOrder.delivery_date) as counter FROM shopOrder 
-            group by shopOrder.delivery_date) as dateFilter where dateFilter.counter > 2`
+            const q = `select * from (SELECT shopOrder.delivery_date, count(shopOrder.delivery_date) as counter FROM shopOrder group by shopOrder.delivery_date) as dateFilter where counter > 2 and year(delivery_date) >= year(now()) and month(delivery_date) >= month(now())`
             const filteredDates = await Query(q)
+            console.log(filteredDates);
             res.json({ err: false, filteredDates })
         } catch (err) {
             console.log(err);
@@ -80,7 +80,7 @@ router.get('/dates', vt, async (req, res) => {
 })
 
 // get receipt file 
-router.get('/receipt/:id', vt,async (req, res) => {
+router.get('/receipt/:id',vt,async (req, res) => {
     if (req.user.role === 2) {
     try {
         const q = `select * from (SELECT shopOrder.id as order_id, shopOrder.user_id, user.first_name, user.last_name, user.email, user.israeliID, user.city as user_city, user.street as user_street, shopOrder.cart_id , shopOrder.order_total_price, shopOrder.delivery_date, shopOrder.closing_date, shopOrder.city as order_city, shopOrder.street as order_street, shopOrder.credit_card FROM shopOrder left join user on shopOrder.user_id = user.id) as user_order left join (SELECT cartItem.cart_id as cartID, cartItem.id as cartItem_id , cartItem.product_id, product.name, cartItem.product_amount, product.price, cartItem.product_total_price, product.image  FROM cartItem inner join product on product.id = product_id) as cart_products on user_order.cart_id = cart_products.cartID where order_id = ${req.params.id}`
@@ -107,6 +107,7 @@ router.get('/receipt/:id', vt,async (req, res) => {
                         console.log(err);
                         res.json({ err: true, msg: err })
                     } else {
+                       
                         res.download(data.filename);
                     }
                 });

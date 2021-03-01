@@ -20,7 +20,7 @@ const vt = async (req, res, next) => {
                         city: payload.city,
                         street: payload.street,
                         isLogin: true
-                    }, "EndOfCourse1", { expiresIn: "1m" })
+                    }, "EndOfCourse1", { expiresIn: "10m" })
                     req.user = payload
                     req.token = token
                     next()

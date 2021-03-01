@@ -34,7 +34,7 @@ router.get('/', vt, async (req, res) => {
 })
 
 // get amount of products in site
-router.get('/', async (req, res) => {
+router.get('/count', async (req, res) => {
     try {
         const q = `SELECT count(id) as productsCount FROM product`
         let productsCount = await Query(q)
