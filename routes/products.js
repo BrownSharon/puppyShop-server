@@ -7,10 +7,10 @@ router.get('/category', vt, async (req, res) => {
     try {
         const q = `select * from productCategory`
         const categories = await Query(q)
-        res.json({ err: false, categories })
+        res.status(200).json({ err: false, categories })
     } catch (err) {
         console.log(err);
-        res.json({ err: true, msg: err })
+        res.status(500).json({ err: true, msg: err })
     }
 })
 
@@ -25,11 +25,11 @@ router.get('/', vt, async (req, res) => {
             q='SELECT * FROM product'
         }
         const products = await Query(q)
-        res.json({ err: false, products })
+        res.status(200).json({ err: false, products })
 
     } catch (err) {
         console.log(err);
-        res.json({ err: true, msg: err })
+        res.status(500).json({ err: true, msg: err })
     }
 })
 
@@ -39,10 +39,10 @@ router.get('/count', async (req, res) => {
         const q = `SELECT count(id) as productsCount FROM product`
         let productsCount = await Query(q)
         productsCount = productsCount[0].productsCount
-        res.json({ err: false, productsCount })
+        res.status(200).json({ err: false, productsCount })
     } catch (err) {
         console.log(err);
-        res.json({ err: true, msg: err })
+        res.status(500).json({ err: true, msg: err })
     }
 })
 
@@ -57,14 +57,12 @@ router.post('/', vt, async (req, res) => {
 
             const qq = 'SELECT * FROM product'
             const products = await Query(qq)
-            res.json({ err: false, products })
+            res.status(200).json({ err: false, products })
         } catch (err) {
-            console.log(err);
-            res.json({ err: true, msg: err })
+            res.status(500).json({ err: true, msg: err })
         }
     } else {
-        console.log(err);
-        res.json({ err: true, msg: "unauthorized action" })
+        res.status(401).json({ err: true, msg: "unauthorized action" })
     }
 })
 
@@ -80,14 +78,14 @@ router.put('/:id', vt, async (req, res) => {
             const qq = `SELECT * FROM product where id=${req.params.id}`
             const productItem = await Query(qq)
 
-            res.json({ err: false, productItem })
+            res.status(200).json({ err: false, productItem })
         } catch (err) {
             console.log(err);
-            res.json({ err: true, msg: err })
+            res.status(500).json({ err: true, msg: err })
         }
     } else {
         console.log(err);
-        res.json({ err: true, msg: "unauthorized action" })
+        res.status(401).json({ err: true, msg: "unauthorized action" })
     }
 })
 

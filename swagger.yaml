@@ -1,0 +1,964 @@
+openapi: "3.0.2"
+info:
+  title: "Puppy Shop"
+  version: "1.0"
+servers:
+  - url: http://localhost:10778/
+    description: shop server
+  
+paths:
+  /users/:
+    post:
+      description: register and validate new user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                dryRun:
+                  type: boolean
+                  example: true
+                israeliID:
+                  type: integer
+                  example: 123456789
+                email:
+                  type: string
+                  example: user@gmail.com
+                password:
+                  type: string
+                  example: q123
+                first_name:
+                  type: string
+                  example: first-name
+                last_name:
+                  type: string
+                  example: last-name
+                city:
+                  type: string
+                  example: Ashdod
+                street:
+                  type: string
+                  example: Katz
+              required:
+                - dryRun
+                - israeliID
+                - email
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  err:
+                    type: boolean
+                    example: false
+                  exists:
+                    type: boolean
+                    example: false
+        "201":
+          description: created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  err:
+                    type: boolean
+                    example: false
+                  token:
+                    type: string
+                    example: token
+                  refreshToken:
+                    type: string
+                    example: token
+        "400":
+          description: Id and/or email already exist in our data
+        "406":
+          description: missing some info
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+  /users/cities:  
+    get:
+      description: get 10 big cities (registration and order form)
+      responses:
+        "200":
+          description: ok
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  err:
+                    type: boolean
+                    example: false
+                  cities:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                          example: 2
+                        name:
+                          type: string
+                          example: Ashdod
+
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+  /users/login:
+    post:
+      description: "login"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  example: user@gmail.com
+                password:
+                  type: string
+                  example: q123
+              required:
+                - email
+                - password
+      responses:
+        "201":
+          description: created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  err:
+                    type: boolean
+                    example: false
+                  token:
+                    type: string
+                    example: token
+                  refreshToken:
+                    type: string
+                    example: token
+        "406":
+          description: missing some info
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  err:
+                    type: boolean
+                    example: true
+                  msg:
+                    type: string
+                    example: missing some info
+        "404":
+          description: not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  err:
+                    type: boolean
+                    example: true
+                  msg:
+                    type: string
+                    example: user not found
+        "401":
+          description: unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  err:
+                    type: boolean
+                    example: true
+                  msg:
+                    type: string
+                    example: wrong password
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+  /users/logout:
+    put:
+      description: logout
+      security:
+        - token: []
+          refreshToken: []
+      responses:
+        "200":
+          $ref: "#/components/responses/user"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+  /users/check:
+    get:
+      description: validate token
+      security:
+        - token: []
+          refreshToken: []
+      responses:
+        "200":
+          $ref: "#/components/responses/user"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+
+  /products:
+    get:
+      description: get all products
+      security:
+        - token: []
+          refreshToken: []
+      responses:
+        "200":
+          $ref: "#/components/responses/products"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+    post:
+      description: add product - admin only
+      security:
+        - token: []
+          refreshToken: []
+      responses:
+        "200":
+          $ref: "#/components/responses/products"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+        "401":
+          $ref: "#/components/responses/unauthorized"
+  /products/{id}:
+    put:
+      description: edit product -admin only
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: object
+            properties:
+              id:
+                type: integer
+                example: 4
+      security:
+        - token: []
+          refreshToken: []
+      responses:
+        "200":
+          $ref: "#/components/responses/products"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+        "401":
+          $ref: "#/components/responses/unauthorized"
+  /products/count:
+    get:
+      description: get amount of products in site for welcome page
+      responses:
+        "200":
+          description: ok
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  err:
+                    type: boolean
+                    example: false
+                  productsCount:
+                    type: integer
+                    example: 20
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+  /products/category:
+    get:
+      description: get all product categories
+      security:
+        - token: []
+          refreshToken: []
+      responses:
+        "200":
+          description: ok
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  err:
+                    type: boolean
+                    example: false
+                  categories:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                          example: 2
+                        name:
+                          type: string
+                          example: Food
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+
+  /carts:
+    get:
+      description: get open cart for user
+      security:
+        - token: []
+          refreshToken: []
+      responses:
+        "200":
+          $ref: "#/components/responses/cart"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+        "401":
+          $ref: "#/components/responses/unauthorized"
+    post:
+      description: add new cart for user
+      security:
+        - token: []
+          refreshToken: []
+      responses:
+        "200":
+          $ref: "#/components/responses/cart"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+        "401":
+          $ref: "#/components/responses/unauthorized"
+          
+  /carts/{id}:
+    get:
+      description: get total cart price
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: object
+            properties:
+              id:
+                type: integer
+                example: 4
+      security:
+        - token: []
+          refreshToken: []
+      responses:
+        "200":
+          description: ok
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  err:
+                    type: boolean
+                    example: false
+                  totalCartPrice:
+                    type: integer
+                    example: 345
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+        "401":
+          $ref: "#/components/responses/unauthorized"
+    put:
+      description: change status of cart for user
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: object
+            properties:
+              id:
+                type: integer
+                example: 4
+      security:
+        - token: []
+          refreshToken: []
+      responses:
+        "200":
+          $ref: "#/components/responses/cart"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+        "401":
+          $ref: "#/components/responses/unauthorized"
+  
+  /carts/{cart_id}/items: 
+    get:
+      description: get cart items for user
+      security:
+        - token: []
+          refreshToken: []
+      parameters:
+        - in: path
+          name: cart_id
+          required: true
+          schema:
+            type: integer
+            example: 1
+      responses:
+        "200":
+          $ref: "#/components/responses/cartItems"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+        "401":
+          $ref: "#/components/responses/unauthorized"
+    post:
+      description: add item to cart
+      security:
+        - token: []
+          refreshToken: []
+      parameters:
+        - in: path
+          name: cart_id
+          required: true
+          schema:
+            type: integer
+            example: 1 
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                product_id:
+                  type: integer
+                  example: 4
+                product_amount:
+                  type: integer
+                  example: 2
+                product_total_price:
+                  type: integer
+                  example: 200
+      responses:
+        "200":
+          $ref: "#/components/responses/cartItemsUpdate"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+        "401":
+          $ref: "#/components/responses/unauthorized"
+    delete:
+      description: delete all items in cart
+      parameters:
+        - name: cart_id
+          in: path
+          required: true
+          schema:
+            type: object
+            properties:
+              id:
+                type: integer
+                example: 4
+      security:
+        - token: []
+          refreshToken: []
+      responses:
+        "200":
+          $ref: "#/components/responses/cartItems"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+        "401":
+          $ref: "#/components/responses/unauthorized"
+  
+  /carts/{cart_id}/items/{item_id}: 
+    delete:
+      description: delete item from cart
+      security:
+        - token: []
+          refreshToken: []
+      parameters:
+        - in: path
+          name: cart_id
+          required: true
+          schema:
+            type: integer
+            example: 1
+        - in: path
+          name: item_id
+          description: cart item id
+          required: true
+          schema:
+            type: integer
+            example: 2
+      responses:
+        "200":
+          $ref: "#/components/responses/cartItems"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+        "401":
+          $ref: "#/components/responses/unauthorized"
+    put:
+      description: edit quantity of an item
+      security:
+        - token: []
+          refreshToken: []
+      parameters:
+        - name: cart_id
+          in: path
+          required: true
+          schema:
+            type: integer
+            example: 1 
+        - name: item_id
+          in: path
+          required: true
+          schema:
+            type: integer
+            example: 4     
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                product_amount:
+                  type: integer
+                  example: 2
+                product_total_price:
+                  type: integer
+                  example: 200
+      responses:
+        "200":
+          $ref: "#/components/responses/cartItemsUpdate"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+        "401":
+          $ref: "#/components/responses/unauthorized"
+
+  /orders:
+    get:
+      description: get last order for user
+      security:
+        - token: []
+          refreshToken: []
+      responses:
+        "200":
+          $ref: "#/components/responses/order"
+        "204":
+          description: data not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  err:
+                    type: boolean
+                    example: true
+                  msg:
+                    type: string
+                    example: There is no last order
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+        "401":
+          $ref: "#/components/responses/unauthorized"
+    post:
+      description: add new order
+      security:
+        - token: []
+          refreshToken: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                order_total_price:
+                  type: integer
+                  example: 200
+                cart_id:
+                  type: integer
+                  example: 3
+                user_id:
+                  type: integer
+                  example: 6
+                city:
+                  type: string
+                  example: Ashdod
+                street:
+                  type: string
+                  example: Katz
+                delivery_date:
+                  type: string
+                  example: "2021-05-05"
+                closing_date:
+                  type: string
+                  example: "2021-04-05 17:45:30"
+                credit_card:
+                  type: integer
+                  example: 1234
+      responses:
+        "200":
+          $ref: "#/components/responses/order"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+        "401":
+          $ref: "#/components/responses/unauthorized"
+  /orders/count:
+    get:
+      description: count number of orders in site
+      responses:
+        "200":
+          description: ok
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  err:
+                    type: boolean
+                    example: false
+                  numberOfOrders:
+                    type: integer
+                    example: 48
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+        "401":
+          $ref: "#/components/responses/unauthorized"
+  /orders/dates:
+    get:
+      description:  get orders dates for filtering the delivery day in order form
+      security:
+        - token: []
+          refreshToken: []
+      responses:
+        "200":
+          description: ok
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  err:
+                    type: boolean
+                    example: false
+                  filteredDates:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        delivery_date:
+                          type: string
+                          example: "2021-05-14"
+                        counter:
+                          type: string
+                          example: 3
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+        "401":
+          $ref: "#/components/responses/unauthorized"
+  /orders/{order_id}/receipt:
+    get:
+      description: get receipt file
+      parameters:
+        - in: path
+          name: order_id
+          required: true
+          schema:
+            type: object
+            properties:
+              id:
+                description: order id
+                type: integer
+                example: 4
+      security:
+        - token: []
+          refreshToken: []
+      responses:
+        "200":
+          description: The receipt of the current order
+        "400":
+          description: bad request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  err:
+                    type: boolean
+                    example: false
+                  msg:
+                    type: string
+                    example: error
+        "404":
+          description: data not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  err:
+                    type: boolean
+                    example: true
+                  msg:
+                    type: string
+                    example: There is no order with this id
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+        "401":
+          $ref: "#/components/responses/unauthorized"
+
+components:
+  securitySchemes:
+    token:
+      type: apiKey
+      in: header
+      name: token
+    refreshToken:
+      type: apiKey
+      in: header
+      name: refreshToken
+  responses:
+    InternalServerError:
+      description: Internal Server Error
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              err:
+                type: boolean
+                example: true
+              msg:
+                type: string
+                example: error
+    unauthorized:
+      description: unauthorized action
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              err:
+                type: boolean
+                example: true
+              msg:
+                type: string
+                example: unauthorized action
+    products:
+      description: products
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              err:
+                type: boolean
+                example: false
+              products:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: integer
+                      example: 1
+                    name:
+                      type: string
+                      example: product1
+                    category_id:
+                      type: integer
+                      example: 2
+                    price:
+                      type: integer
+                      example: 119
+                    image:
+                      type: string
+                      example: url.string
+                    product_amount:
+                      type: integer
+                      example: 3
+    user:
+      description: user
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              err:
+                type: boolean
+                example: false
+              user:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                    example: 1
+                  israeliID:
+                    type: integer
+                    example: 123456789
+                  first_name:
+                    type: string
+                    example: sharon
+                  last-name:
+                    type: string
+                    example: brown  
+                  email:
+                    type: string
+                    example: user@gmail.com
+                  role:
+                    type: integer
+                    example: 2  
+                  city:
+                    type: string
+                    example: Ashdod
+                  street:
+                    type: string
+                    example: Katz
+                  isLogin:
+                    type: boolean  
+                    example: false
+    cart:
+      description: open/new cart
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              err:
+                type: boolean
+                example: false
+              cart:
+                type: object
+                properties:
+                  id: 
+                    type: integer
+                    example: 1 
+                  user_id: 
+                    type: integer
+                    example: 2 
+                  create_date: 
+                    type: string
+                    example: "2021-05-05"
+                  status: 
+                    type: boolean
+                    example: true
+    cartItems:
+      description: cart items
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              err:
+                type: boolean
+                example: false
+              cartItems:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    cartItem_id: 
+                      type: integer
+                      example: 1
+                    name: 
+                      type: string
+                      example: item1
+                    price:
+                      type: integer
+                      example: 35
+                    product_id:
+                      type: integer
+                      example: 3
+                    product_amount:
+                      type: integer
+                      example: 2
+                    product_total_price:
+                      type: integer
+                      example: 70
+                    cart_id: 
+                      type: integer
+                      example: 4
+                    image: 
+                      type: string
+                      example: url.string1 
+    cartItemsUpdate:
+      description: cart items add/edit items
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              err:
+                type: boolean
+                example: false
+              cartItems:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    cartItem_id: 
+                      type: integer
+                      example: 1
+                    name: 
+                      type: string
+                      example: item1
+                    price:
+                      type: integer
+                      example: 35
+                    product_id:
+                      type: integer
+                      example: 3
+                    product_amount:
+                      type: integer
+                      example: 2
+                    product_total_price:
+                      type: integer
+                      example: 70
+                    cart_id: 
+                      type: integer
+                      example: 4
+                    image: 
+                      type: string
+                      example: url.string1 
+              totalCartPrice:
+                type: integer
+                example: 345
+    order:
+      description: last/new order
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              err:
+                type: boolean
+                example: false
+              order:
+                type: object
+                properties:
+                    id: 
+                      type: integer
+                      example: 1
+                    user_id:
+                      type: integer
+                      example: 3
+                    cart_id: 
+                      type: integer
+                      example: 4
+                    order_total_price: 
+                      type: integer
+                      example: 213
+                    city: 
+                      type: string
+                      example: Ashdod
+                    street:
+                      type: string
+                      example: Katz
+                    delivery_date: 
+                      type: string
+                      example: "2021-05-05"
+                    closing_date: 
+                      type: string
+                      example: "2021-04-05 17:45:30"
+                    credit_card: 
+                      type: integer
+                      example: 1234
+            

@@ -17,6 +17,10 @@
 </head>
 
 <body>
+    <div style="text-align: center; padding-left: 50px;">
+        <h3>Receipt no.<%= orderData[0].order_id %>
+        </h3>
+    </div>    
     <div style="width: 85%; margin: 0 7.5%;">
         <div style="text-align: left; padding-left: 50px;">
             <p style="font-weight: bold;">Customer Details</p>
@@ -32,8 +36,6 @@
             </p>
         </div>
         <div style="text-align: center; padding-left: 50px;">
-            <h3>Receipt no.<%= orderData[0].order_id %>
-            </h3>
             <table>
                 <tr class="header">
                     <th>Product name</th>
@@ -52,10 +54,10 @@
                                 <%= item.product_amount %>
                             </td>
                             <td>
-                                <%= item.price %>
+                                <%= item.price %>$
                             </td>
                             <td>
-                                <%=item.product_total_price %>
+                                <%=item.product_total_price %>$
                             </td>
                         </tr>
                         <% });%>
