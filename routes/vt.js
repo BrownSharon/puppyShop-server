@@ -8,7 +8,7 @@ const vt = async (req, res, next) => {
             jwt.verify(req.headers.refreshToken, "EndOfCourse2", (err, payload) => {
                 if (err) {
                     console.log(err);
-                    res.status(401).json({ err: true, msg: err })
+                    res.status(406).json({ err: true, msg: "refresh token expired" })
                 } else {
                     const token = jwt.sign({
                         id: user.id,

@@ -95,7 +95,7 @@ router.post('/', async (req, res) => {
 router.post('/login', async (req, res) => {
     try {
         const { email, password } = req.body
-        if (!email || !password) return res.status(406).json({ err: true, msg: "missing some info" })
+        if (!email || !password) return res.status(400).json({ err: true, msg: "missing some info" })
 
         const q = `SELECT * FROM user WHERE email="${email}"`
         let user = await Query(q)
@@ -153,16 +153,6 @@ router.put('/logout', vt, async (req, res) => {
     }
 })
 
-// check tokens
-router.get('/check', vt, async (req, res) => {
-    try {
-        const user = req.user
-        res.status(200).json({ err: false, user })
-    } catch (err) {
-        console.log(err);
-        res.status(500).json({ err: true, msg: err })
-    }
-})
 
 
 module.exports = router

@@ -97,6 +97,7 @@ router.put('/:cart_id', vt, async (req,res)=>{
 
 // get cart items for user
 router.get('/:cart_id/items', vt, async (req, res) => {
+   console.log("test");
     if (req.user.role === 2) {
         try {
             const { cart_id } = req.params
@@ -104,13 +105,12 @@ router.get('/:cart_id/items', vt, async (req, res) => {
             inner join product on product.id = product_id where cart_id=${cart_id}`
             const cartItems = await Query(q)
 
-            res.json({ err: false, cartItems })
+            res.status(200).json({ err: false, cartItems })
         } catch (err) {
-            console.log(err);
-            res.json({ err: true, msg: err })
+            res.status(500).json({ err: true, msg: err })
         }
     } else {
-        res.json({ err: true, msg: "unauthorized action" })
+        res.status(401).json({ err: true, msg: "unauthorized action" })
     }
 })
 

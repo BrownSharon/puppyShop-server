@@ -75,9 +75,9 @@ paths:
                   refreshToken:
                     type: string
                     example: token
-        "400":
+        "403":
           description: Id and/or email already exist in our data
-        "406":
+        "400":
           description: missing some info
         "500":
           $ref: "#/components/responses/InternalServerError"
@@ -145,7 +145,7 @@ paths:
                   refreshToken:
                     type: string
                     example: token
-        "406":
+        "400":
           description: missing some info
           content:
             application/json:
@@ -197,17 +197,8 @@ paths:
           $ref: "#/components/responses/user"
         "500":
           $ref: "#/components/responses/InternalServerError"
-  /users/check:
-    get:
-      description: validate token
-      security:
-        - token: []
-          refreshToken: []
-      responses:
-        "200":
-          $ref: "#/components/responses/user"
-        "500":
-          $ref: "#/components/responses/InternalServerError"
+        "406":
+          $ref: "#/components/responses/refreshTokenExpired"  
 
   /products:
     get:
@@ -220,6 +211,8 @@ paths:
           $ref: "#/components/responses/products"
         "500":
           $ref: "#/components/responses/InternalServerError"
+        "406":
+          $ref: "#/components/responses/refreshTokenExpired"  
     post:
       description: add product - admin only
       security:
@@ -232,6 +225,8 @@ paths:
           $ref: "#/components/responses/InternalServerError"
         "401":
           $ref: "#/components/responses/unauthorized"
+        "406":
+          $ref: "#/components/responses/refreshTokenExpired"  
   /products/{id}:
     put:
       description: edit product -admin only
@@ -255,6 +250,8 @@ paths:
           $ref: "#/components/responses/InternalServerError"
         "401":
           $ref: "#/components/responses/unauthorized"
+        "406":
+          $ref: "#/components/responses/refreshTokenExpired"  
   /products/count:
     get:
       description: get amount of products in site for welcome page
@@ -304,6 +301,8 @@ paths:
                           example: Food
         "500":
           $ref: "#/components/responses/InternalServerError"
+        "406":
+          $ref: "#/components/responses/refreshTokenExpired"  
 
   /carts:
     get:
@@ -318,6 +317,8 @@ paths:
           $ref: "#/components/responses/InternalServerError"
         "401":
           $ref: "#/components/responses/unauthorized"
+        "406":
+          $ref: "#/components/responses/refreshTokenExpired"  
     post:
       description: add new cart for user
       security:
@@ -330,6 +331,8 @@ paths:
           $ref: "#/components/responses/InternalServerError"
         "401":
           $ref: "#/components/responses/unauthorized"
+        "406":
+          $ref: "#/components/responses/refreshTokenExpired"  
           
   /carts/{id}:
     get:
@@ -365,6 +368,8 @@ paths:
           $ref: "#/components/responses/InternalServerError"
         "401":
           $ref: "#/components/responses/unauthorized"
+        "406":
+          $ref: "#/components/responses/refreshTokenExpired"  
     put:
       description: change status of cart for user
       parameters:
@@ -387,6 +392,8 @@ paths:
           $ref: "#/components/responses/InternalServerError"
         "401":
           $ref: "#/components/responses/unauthorized"
+        "406":
+          $ref: "#/components/responses/refreshTokenExpired"  
   
   /carts/{cart_id}/items: 
     get:
@@ -408,6 +415,8 @@ paths:
           $ref: "#/components/responses/InternalServerError"
         "401":
           $ref: "#/components/responses/unauthorized"
+        "406":
+          $ref: "#/components/responses/refreshTokenExpired"  
     post:
       description: add item to cart
       security:
@@ -443,6 +452,8 @@ paths:
           $ref: "#/components/responses/InternalServerError"
         "401":
           $ref: "#/components/responses/unauthorized"
+        "406":
+          $ref: "#/components/responses/refreshTokenExpired"  
     delete:
       description: delete all items in cart
       parameters:
@@ -465,6 +476,8 @@ paths:
           $ref: "#/components/responses/InternalServerError"
         "401":
           $ref: "#/components/responses/unauthorized"
+        "406":
+          $ref: "#/components/responses/refreshTokenExpired"  
   
   /carts/{cart_id}/items/{item_id}: 
     delete:
@@ -493,6 +506,8 @@ paths:
           $ref: "#/components/responses/InternalServerError"
         "401":
           $ref: "#/components/responses/unauthorized"
+        "406":
+          $ref: "#/components/responses/refreshTokenExpired"  
     put:
       description: edit quantity of an item
       security:
@@ -531,6 +546,8 @@ paths:
           $ref: "#/components/responses/InternalServerError"
         "401":
           $ref: "#/components/responses/unauthorized"
+        "406":
+          $ref: "#/components/responses/refreshTokenExpired"
 
   /orders:
     get:
@@ -558,6 +575,8 @@ paths:
           $ref: "#/components/responses/InternalServerError"
         "401":
           $ref: "#/components/responses/unauthorized"
+        "406":
+          $ref: "#/components/responses/refreshTokenExpired"  
     post:
       description: add new order
       security:
@@ -601,6 +620,8 @@ paths:
           $ref: "#/components/responses/InternalServerError"
         "401":
           $ref: "#/components/responses/unauthorized"
+        "406":
+          $ref: "#/components/responses/refreshTokenExpired"  
   /orders/count:
     get:
       description: count number of orders in site
@@ -622,6 +643,8 @@ paths:
           $ref: "#/components/responses/InternalServerError"
         "401":
           $ref: "#/components/responses/unauthorized"
+        "406":
+          $ref: "#/components/responses/refreshTokenExpired"  
   /orders/dates:
     get:
       description:  get orders dates for filtering the delivery day in order form
@@ -654,6 +677,8 @@ paths:
           $ref: "#/components/responses/InternalServerError"
         "401":
           $ref: "#/components/responses/unauthorized"
+        "406":
+          $ref: "#/components/responses/refreshTokenExpired" 
   /orders/{order_id}/receipt:
     get:
       description: get receipt file
@@ -704,6 +729,8 @@ paths:
           $ref: "#/components/responses/InternalServerError"
         "401":
           $ref: "#/components/responses/unauthorized"
+        "406":
+          $ref: "#/components/responses/refreshTokenExpired"
 
 components:
   securitySchemes:
@@ -742,6 +769,19 @@ components:
               msg:
                 type: string
                 example: unauthorized action
+    refreshTokenExpired:
+      description: not accepted
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              err:
+                type: boolean
+                example: true
+              msg:
+                type: string
+                example: refresh token expired    
     products:
       description: products
       content:
