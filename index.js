@@ -1,5 +1,11 @@
-app.use(cors())
-app.use(express.json())
+const express = require('express')
+const cors = require('cors')
+require('./dataConfig')
+const path = require("path");
+
+const swaggerUi = require('swagger-ui-express');
+const YAML = require('yamljs');
+const swaggerDocument = YAML.load('./swagger.yaml');
 
 const app = express()
 
