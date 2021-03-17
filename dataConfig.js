@@ -10,7 +10,6 @@ const con = mysql.createConnection({
 
 con.connect((err) => {
 	if (err) throw err
-	console.log('cool! connected to mySql')
 })
 
 const Query = (q, ...values) => {

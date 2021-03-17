@@ -12,7 +12,6 @@ router.get('/cities', async (req, res) => {
         let cities = await Query(q)
         res.status(200).json({ err: false, cities })
     } catch (err) {
-        console.log(err);
         res.status(500).json({ err: true, msg: err })
     }
 })
@@ -22,7 +21,6 @@ router.post('/', async (req, res) => {
     try {
         const { israeliID, email, password, first_name, last_name, city, street, dryRun } = req.body
 
-        console.log("test - register 1");
         // check id
         let q = `SELECT * FROM user where israeliID=${israeliID}`
         let userCheckID = await Query(q)
@@ -33,13 +31,13 @@ router.post('/', async (req, res) => {
         let userCheckEmail = await Query(q)
         userCheckEmail = userCheckEmail[0]
 
-        if (userCheckID || userCheckEmail) return res.status(400).json({err: true, msg:"Id and/or email already exist in our data"})
+        if (userCheckID || userCheckEmail) return res.status(400).json({ err: true, msg: "Id and/or email already exist in our data" })
         res.status(200).json({ err: false, exists: false })
 
         if (!dryRun) {
 
             // check if the all fields are full (after all the validation in client side)
-            if (!israeliID || !email || !password || !first_name || !last_name || !city || !street) return res.status(406).json({err:true, msg:"missing some info"})
+            if (!israeliID || !email || !password || !first_name || !last_name || !city || !street) return res.status(406).json({ err: true, msg: "missing some info" })
 
             // hash the password
             const hashedPassword = bcrypt.hashSync(password, 10);
@@ -85,7 +83,6 @@ router.post('/', async (req, res) => {
 
         }
     } catch (err) {
-        console.log(err);
         res.status(500).json({ err: true, msg: err })
     }
 })
@@ -148,7 +145,6 @@ router.put('/logout', vt, async (req, res) => {
         const user = await Query(qq)
         res.status(200).json({ err: false, user })
     } catch (err) {
-        console.log(err);
         res.status(500).json({ err: true, msg: err })
     }
 })

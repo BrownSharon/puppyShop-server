@@ -9,7 +9,6 @@ router.get('/category', vt, async (req, res) => {
         const categories = await Query(q)
         res.status(200).json({ err: false, categories })
     } catch (err) {
-        console.log(err);
         res.status(500).json({ err: true, msg: err })
     }
 })
@@ -22,13 +21,12 @@ router.get('/', vt, async (req, res) => {
         if (req.user.role === 2) {
             q = `SELECT * FROM product left join  (SELECT cartItem.id as itemCartID, cartItem.cart_id, cartItem.product_id, cartItem.product_amount, cartItem.product_total_price FROM cartItem where cart_id = ${req.query.cart_id}) as current_cart_items on current_cart_items.product_id = product.id`
         } else {
-            q='SELECT * FROM product'
+            q = 'SELECT * FROM product'
         }
         const products = await Query(q)
         res.status(200).json({ err: false, products })
 
     } catch (err) {
-        console.log(err);
         res.status(500).json({ err: true, msg: err })
     }
 })
@@ -41,7 +39,6 @@ router.get('/count', async (req, res) => {
         productsCount = productsCount[0].productsCount
         res.status(200).json({ err: false, productsCount })
     } catch (err) {
-        console.log(err);
         res.status(500).json({ err: true, msg: err })
     }
 })
@@ -80,11 +77,9 @@ router.put('/:id', vt, async (req, res) => {
 
             res.status(200).json({ err: false, productItem })
         } catch (err) {
-            console.log(err);
             res.status(500).json({ err: true, msg: err })
         }
     } else {
-        console.log(err);
         res.status(401).json({ err: true, msg: "unauthorized action" })
     }
 })
